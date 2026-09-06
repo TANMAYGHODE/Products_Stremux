@@ -28,6 +28,7 @@ class AutoClaimApp {
 
     this._initElements();
     this._initEventListeners();
+    this._initTheme();
     this._initApiSettings();
     this._initOutputsAndHealth();
   }
@@ -204,6 +205,34 @@ class AutoClaimApp {
     if (btn) btn.addEventListener("click", promptSettings);
     if (aiBadge) aiBadge.addEventListener("click", promptSettings);
     if (cloudBadge) cloudBadge.addEventListener("click", promptSettings);
+  }
+
+  _initTheme() {
+    this.btnThemeToggle = document.getElementById("btnThemeToggle");
+    const savedTheme = localStorage.getItem("autoclaim_theme") || "day-light";
+    this.setTheme(savedTheme);
+
+    if (this.btnThemeToggle) {
+      this.btnThemeToggle.addEventListener("click", () => {
+        const current = document.documentElement.getAttribute("data-theme") || "day-light";
+        const next = current === "day-light" ? "dark" : "day-light";
+        this.setTheme(next);
+      });
+    }
+  }
+
+  setTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("autoclaim_theme", theme);
+    if (this.btnThemeToggle) {
+      if (theme === "day-light") {
+        this.btnThemeToggle.innerHTML = `☀️ Day-Light`;
+        this.btnThemeToggle.title = "Current theme: Day-Light. Click to switch to Night Mode.";
+      } else {
+        this.btnThemeToggle.innerHTML = `🌙 Night Mode`;
+        this.btnThemeToggle.title = "Current theme: Night Mode. Click to switch to Day-Light.";
+      }
+    }
   }
 
   async _initOutputsAndHealth() {

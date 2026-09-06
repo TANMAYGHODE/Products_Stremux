@@ -346,20 +346,67 @@ class AutoClaimApp {
     }
   }
 
-  _handleImageFile(side, file) {
+  _compressImage(file, maxDimension = 1280, quality = 0.82) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height = Math.round((height * maxDimension) / width);
+              width = maxDimension;
+            } else {
+              width = Math.round((width * maxDimension) / height);
+              height = maxDimension;
+            }
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = "high";
+          ctx.drawImage(img, 0, 0, width, height);
+
+          resolve(canvas.toDataURL("image/jpeg", quality));
+        };
+        img.onerror = () => resolve(e.target.result);
+        img.src = e.target.result;
+      };
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async _handleImageFile(side, file) {
     if (!file.type.startsWith("image/")) {
       alert("Please upload a valid image file (JPG, PNG, WEBP).");
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      this.photos[side].image_b64 = e.target.result;
-      this.photos[side].annotated_image_b64 = null;
-      this.photos[side].annotations = [];
+    const card = document.getElementById(`photoCard_${side}`);
+    const previewBox = card.querySelector(".photo-preview-box");
+    previewBox.innerHTML = `
+      <div class="photo-placeholder">
+        <span style="font-size: 20px;">⚡</span>
+        <span class="placeholder-text">Optimizing photo...</span>
+      </div>
+    `;
+
+    const compressed = await this._compressImage(file, 1280, 0.82);
+    if (!compressed) {
+      alert("Could not process image file.");
       this._updateCardUI(side);
-    };
-    reader.readAsDataURL(file);
+      return;
+    }
+
+    this.photos[side].image_b64 = compressed;
+    this.photos[side].annotated_image_b64 = null;
+    this.photos[side].annotations = [];
+    this._updateCardUI(side);
   }
 
   _updateCardUI(side) {
@@ -410,8 +457,12 @@ class AutoClaimApp {
     if (this.btnAutoDetectVehicle) this.btnAutoDetectVehicle.classList.add("loading");
     if (this.btnAutoDetectText) this.btnAutoDetectText.textContent = "Scanning Specs & Plate...";
 
+    // For license plate and vehicle identification, prioritize front and rear views
+    const hasFrontOrRear = availableSides.filter(s => s === "front" || s === "rear");
+    const sidesToScan = hasFrontOrRear.length > 0 ? hasFrontOrRear : availableSides;
+
     const photosPayload = {};
-    availableSides.forEach(side => {
+    sidesToScan.forEach(side => {
       photosPayload[side] = {
         view: side,
         image_b64: this.photos[side].image_b64,

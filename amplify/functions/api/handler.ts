@@ -185,7 +185,8 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       const photos = body.photos || {};
 
       const contentBlocks: any[] = [];
-      const priorityOrder = ["rear", "front", "left", "right"];
+      const hasFrontOrRear = photos["front"] || photos["rear"];
+      const priorityOrder = hasFrontOrRear ? ["rear", "front"] : ["left", "right"];
 
       for (const side of priorityOrder) {
         const p = photos[side];

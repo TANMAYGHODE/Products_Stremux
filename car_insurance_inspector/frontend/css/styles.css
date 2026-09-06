@@ -3,7 +3,7 @@
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --bg-tertiary: #f1f5f9;
-  --card-bg: rgba(255, 255, 255, 0.96);
+  --card-bg: #ffffff;
   --card-border: #e2e8f0;
   --card-border-subtle: #f1f5f9;
   --card-hover-border: #0284c7;
@@ -48,7 +48,7 @@
   --bg-primary: #070a12;
   --bg-secondary: #0d121f;
   --bg-tertiary: #131b2e;
-  --card-bg: rgba(16, 24, 40, 0.85);
+  --card-bg: #0d121f;
   --card-border: rgba(255, 255, 255, 0.08);
   --card-border-subtle: rgba(255, 255, 255, 0.04);
   --card-hover-border: rgba(0, 210, 255, 0.35);
@@ -86,16 +86,14 @@
 body {
   background-color: var(--bg-primary);
   background-image: 
-    radial-gradient(circle at 12% 12%, rgba(2, 132, 199, 0.06) 0%, transparent 45%),
-    radial-gradient(circle at 88% 22%, rgba(124, 58, 237, 0.05) 0%, transparent 45%),
+    radial-gradient(circle at 12% 12%, rgba(2, 132, 199, 0.05) 0%, transparent 45%),
+    radial-gradient(circle at 88% 22%, rgba(124, 58, 237, 0.04) 0%, transparent 45%),
     radial-gradient(circle at 50% 88%, rgba(5, 150, 105, 0.04) 0%, transparent 50%);
-  background-attachment: fixed;
   color: var(--text-primary);
   font-family: var(--font-sans);
   min-height: 100vh;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 [data-theme="dark"] body {
@@ -139,13 +137,11 @@ header.app-header {
   align-items: center;
   padding: 16px 24px;
   background: var(--card-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-lg);
   margin-bottom: 28px;
   box-shadow: var(--shadow-subtle);
-  transition: all 0.25s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .brand {
@@ -232,18 +228,20 @@ header.app-header {
   border-radius: 50%;
   background: var(--accent-green);
   box-shadow: 0 0 8px var(--accent-green);
+  transform: translateZ(0);
+  will-change: transform, opacity;
 }
 
 .status-dot.active {
   background: var(--accent-green);
   box-shadow: 0 0 8px var(--accent-green);
-  animation: pulse-glow 2s infinite;
+  animation: pulse-glow 2.5s ease-in-out infinite;
 }
 
 .status-dot.warning {
   background: var(--accent-amber);
   box-shadow: 0 0 8px var(--accent-amber);
-  animation: pulse-glow-amber 2s infinite;
+  animation: pulse-glow-amber 2.5s ease-in-out infinite;
 }
 
 .status-dot.error {
@@ -252,15 +250,15 @@ header.app-header {
 }
 
 @keyframes pulse-glow {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(5, 150, 105, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); }
+  0% { transform: scale(0.92); opacity: 0.75; }
+  50% { transform: scale(1.18); opacity: 1; }
+  100% { transform: scale(0.92); opacity: 0.75; }
 }
 
 @keyframes pulse-glow-amber {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(217, 119, 6, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); }
+  0% { transform: scale(0.92); opacity: 0.75; }
+  50% { transform: scale(1.18); opacity: 1; }
+  100% { transform: scale(0.92); opacity: 0.75; }
 }
 
 .nav-tabs {
@@ -394,13 +392,12 @@ header.app-header {
 /* Section Cards */
 .card-section {
   background: var(--card-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-xl);
   padding: 32px;
   box-shadow: var(--shadow-card);
   margin-bottom: 28px;
+  contain: layout style;
 }
 
 .section-header {
@@ -485,9 +482,7 @@ header.app-header {
   position: absolute;
   top: 12px;
   left: 12px;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: var(--bg-secondary);
   border: 1px solid var(--card-border);
   padding: 4px 10px;
   border-radius: 20px;
@@ -496,12 +491,12 @@ header.app-header {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--accent-cyan);
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   z-index: 2;
 }
 
 [data-theme="dark"] .photo-badge {
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--bg-secondary);
 }
 
 .annotation-count-badge {

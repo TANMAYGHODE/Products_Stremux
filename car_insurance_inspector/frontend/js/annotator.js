@@ -374,16 +374,23 @@ class DamageAnnotator {
 
   _handleMouseMove(e) {
     if (!this.isDrawing) return;
-    const coords = this._getCanvasCoords(e);
+    this._pendingCoords = this._getCanvasCoords(e);
+    if (this._rafPending) return;
+    this._rafPending = true;
 
-    if (this.activeTool === "pen") {
-      this.currentPoints.push(coords);
-      this.render();
-      this._drawCurrentPen();
-    } else {
-      this.render();
-      this._drawCurrentShape(coords);
-    }
+    requestAnimationFrame(() => {
+      this._rafPending = false;
+      if (!this.isDrawing || !this._pendingCoords) return;
+
+      if (this.activeTool === "pen") {
+        this.currentPoints.push(this._pendingCoords);
+        this.render();
+        this._drawCurrentPen();
+      } else {
+        this.render();
+        this._drawCurrentShape(this._pendingCoords);
+      }
+    });
   }
 
   _handleTouchMove(e) {
@@ -394,6 +401,7 @@ class DamageAnnotator {
   _handleMouseUp(e) {
     if (!this.isDrawing) return;
     this.isDrawing = false;
+    this._rafPending = false;
 
     let endCoords = { x: this.startX, y: this.startY };
     if (e.clientX !== undefined || (e.changedTouches && e.changedTouches.length)) {

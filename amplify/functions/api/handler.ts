@@ -15,12 +15,13 @@ async function getMongoDb(): Promise<any> {
   if (!uri) throw new Error("MONGODB_URI environment variable is not configured");
 
   if (!cachedMongoClient) {
-    cachedMongoClient = new MongoClient(uri, {
+    const client = new MongoClient(uri, {
       serverSelectionTimeoutMS: 5000,
       connectTimeoutMS: 5000,
       maxPoolSize: 10,
     });
-    await cachedMongoClient.connect();
+    await client.connect();
+    cachedMongoClient = client;
     const db = cachedMongoClient.db(MONGODB_DB_NAME);
     // Ensure index exists
     db.collection("inspections").createIndex({ inspection_id: 1 }, { unique: true }).catch(() => {});
@@ -153,11 +154,14 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     // ----------------------------------------------------
     if (method === "GET" && (path === "/api/health" || path === "/health")) {
       let dbStatus = "disconnected";
+      let dbError: string | null = null;
       try {
         const db = await getMongoDb();
         await db.command({ ping: 1 });
         dbStatus = "connected";
       } catch (err: any) {
+        dbError = err.message;
+        cachedMongoClient = null;
         console.warn("Mongo ping warning:", err.message);
       }
 
@@ -167,6 +171,8 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
         status: "healthy",
         timestamp: new Date().toISOString(),
         database: dbStatus,
+        database_error: dbError,
+        has_mongo_uri: !!process.env.MONGODB_URI,
         ai_engine: aiStatus,
       });
     }

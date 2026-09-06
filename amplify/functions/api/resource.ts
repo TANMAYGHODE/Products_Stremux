@@ -7,7 +7,7 @@ export const apiFunction = defineFunction({
   memoryMB: 512,
   environment: {
     MONGODB_DB_NAME: 'stremux_insurance',
-    AWS_REGION: 'us-east-1',
+    BEDROCK_REGION: 'us-east-1',
     BEDROCK_MODEL_ID: 'google.gemma-3-27b-it',
     BEDROCK_FALLBACK_MODEL_ID: 'amazon.nova-pro-v1:0',
   },

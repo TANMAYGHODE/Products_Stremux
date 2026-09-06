@@ -2,7 +2,7 @@ import type { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResul
 import { MongoClient } from "mongodb";
 
 // Configuration
-const REGION = process.env.AWS_REGION || "us-east-1";
+const REGION = process.env.BEDROCK_REGION || process.env.AWS_REGION || "us-east-1";
 const PRIMARY_MODEL = process.env.BEDROCK_MODEL_ID || "google.gemma-3-27b-it";
 const FALLBACK_MODEL = process.env.BEDROCK_FALLBACK_MODEL_ID || "amazon.nova-pro-v1:0";
 const MONGODB_DB_NAME = process.env.MONGODB_DB_NAME || "stremux_insurance";

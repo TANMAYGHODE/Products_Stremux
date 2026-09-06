@@ -3,12 +3,13 @@ import { MongoClient } from "mongodb";
 
 // Configuration
 const REGION = process.env.BEDROCK_REGION || process.env.AWS_REGION || "us-east-1";
-const PRIMARY_MODEL = process.env.BEDROCK_MODEL_ID || "google.gemma-3-27b-it";
+const PRIMARY_MODEL = process.env.BEDROCK_MODEL_ID || "amazon.nova-lite-v1:0";
 const FALLBACK_MODEL = process.env.BEDROCK_FALLBACK_MODEL_ID || "amazon.nova-pro-v1:0";
 const MONGODB_DB_NAME = process.env.MONGODB_DB_NAME || "stremux_insurance";
 
 // Cached MongoDB client across warm Lambda invocations
 let cachedMongoClient: MongoClient | null = null;
+let indexesInitialized = false;
 
 async function getMongoDb(): Promise<any> {
   const uri = process.env.MONGODB_URI;
@@ -16,18 +17,21 @@ async function getMongoDb(): Promise<any> {
 
   if (!cachedMongoClient) {
     const client = new MongoClient(uri, {
-      serverSelectionTimeoutMS: 5000,
-      connectTimeoutMS: 5000,
-      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 3000,
+      connectTimeoutMS: 3000,
+      maxPoolSize: 5,
     });
     await client.connect();
     cachedMongoClient = client;
-    const db = cachedMongoClient.db(MONGODB_DB_NAME);
-    // Ensure index exists
+  }
+
+  const db = cachedMongoClient.db(MONGODB_DB_NAME);
+  if (!indexesInitialized) {
+    indexesInitialized = true;
     db.collection("inspections").createIndex({ inspection_id: 1 }, { unique: true }).catch(() => {});
     db.collection("inspections").createIndex({ created_at: -1 }).catch(() => {});
   }
-  return cachedMongoClient.db(MONGODB_DB_NAME);
+  return db;
 }
 
 // Clean base64 string

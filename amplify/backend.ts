@@ -15,14 +15,9 @@ const backend = defineBackend({
   apiFunction,
 });
 
-// Configure Lambda Function URL with public HTTPS and built-in CORS
+// Configure Lambda Function URL with public HTTPS
 const fnUrl = backend.apiFunction.resources.lambda.addFunctionUrl({
   authType: FunctionUrlAuthType.NONE,
-  cors: {
-    allowedOrigins: ['*'],
-    allowedMethods: [HttpMethod.ALL],
-    allowedHeaders: ['*'],
-  },
 });
 
 // Output the public serverless API endpoint

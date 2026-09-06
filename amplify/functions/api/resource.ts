@@ -6,6 +6,8 @@ export const apiFunction = defineFunction({
   timeoutSeconds: 90,
   memoryMB: 512,
   environment: {
+    BEDROCK_API_KEY: process.env.BEDROCK_API_KEY || '',
+    MONGODB_URI: process.env.MONGODB_URI || '',
     MONGODB_DB_NAME: 'stremux_insurance',
     BEDROCK_REGION: 'us-east-1',
     BEDROCK_MODEL_ID: 'google.gemma-3-27b-it',

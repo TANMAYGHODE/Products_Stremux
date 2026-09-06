@@ -1,0 +1,222 @@
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 14mm 14mm 14mm;
+  }
+
+  *, *::before, *::after {
+    background: transparent !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    font-size: 9.5pt !important;
+    line-height: 1.35 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .app-container {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide UI elements, navigation, interactive wizards */
+  header.app-header,
+  .stepper-bar,
+  .upload-grid,
+  .ai-autodetect-bar,
+  .skip-banner,
+  .questionnaire-container,
+  .action-panel,
+  .report-controls,
+  .modal-overlay,
+  .loading-overlay,
+  .history-view,
+  #photoUploadSection,
+  #questionnaireSection,
+  #lossAssessmentSection,
+  .custom-flaw-card,
+  button {
+    display: none !important;
+  }
+
+  /* Ensure report section is visible and properly formatted */
+  .report-view {
+    display: block !important;
+  }
+
+  .print-only-header {
+    display: block !important;
+    margin-bottom: 14px !important;
+  }
+
+  .print-only-header h1 {
+    font-size: 14pt !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  .card-section,
+  .report-header-card,
+  .metric-card,
+  .gallery-item {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    padding: 10px 14px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .report-header-card {
+    border-bottom: 2px solid #0f172a !important;
+  }
+
+  .report-id-pill {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    border: 1px solid #94a3b8 !important;
+    font-size: 9pt !important;
+    padding: 2px 8px !important;
+    border-radius: 3px !important;
+  }
+
+  .metrics-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 14px !important;
+    page-break-inside: avoid !important;
+  }
+
+  .metric-card {
+    padding: 8px 10px !important;
+  }
+
+  .metric-label {
+    font-size: 7.5pt !important;
+    color: #64748b !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+  }
+
+  .metric-value {
+    font-size: 13pt !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+  }
+
+  .metric-sub {
+    font-size: 8pt !important;
+    color: #475569 !important;
+  }
+
+  /* Schedule table */
+  #rep_vehicle_schedule {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
+    font-size: 8.5pt !important;
+  }
+
+  /* Findings Table */
+  .findings-table-container {
+    border: 1px solid #94a3b8 !important;
+    border-radius: 4px !important;
+    margin-bottom: 14px !important;
+    page-break-inside: auto !important;
+  }
+
+  table.findings-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 8.5pt !important;
+  }
+
+  table.findings-table th {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    border-bottom: 1.5px solid #64748b !important;
+    border-right: 1px solid #e2e8f0 !important;
+    padding: 6px 8px !important;
+    text-transform: uppercase !important;
+    font-size: 7.5pt !important;
+  }
+
+  table.findings-table td {
+    border-bottom: 1px solid #e2e8f0 !important;
+    border-right: 1px solid #e2e8f0 !important;
+    padding: 6px 8px !important;
+    color: #0f172a !important;
+    vertical-align: middle !important;
+  }
+
+  table.findings-table tr {
+    page-break-inside: avoid !important;
+  }
+
+  .badge-tag {
+    border: 1px solid #94a3b8 !important;
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    font-size: 7.5pt !important;
+    padding: 1px 4px !important;
+  }
+
+  /* 4-Photo Loss Evidence Grid */
+  .photo-gallery-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 14px !important;
+    page-break-inside: avoid !important;
+  }
+
+  .gallery-item {
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .gallery-header {
+    background: #f1f5f9 !important;
+    font-size: 8pt !important;
+    font-weight: 700 !important;
+    padding: 4px 6px !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+  }
+
+  .gallery-img-box {
+    height: 105px !important;
+  }
+
+  .gallery-img-box img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  /* Financial Recapitulation and Surveyor Signature block */
+  .surveyor-signature-block {
+    display: block !important;
+    margin-top: 18px !important;
+    padding-top: 24px !important;
+    border-top: 1px dashed #64748b !important;
+    page-break-inside: avoid !important;
+  }
+}
+
+.print-only-header {
+  display: none;
+}

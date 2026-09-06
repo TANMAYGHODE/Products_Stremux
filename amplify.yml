@@ -1,0 +1,11 @@
+version: 1
+frontend:
+  phases:
+    build:
+      commands: []
+  artifacts:
+    baseDirectory: car_insurance_inspector/frontend
+    files:
+      - '**/*'
+  cache:
+    paths: []

@@ -30,3 +30,11 @@ new CfnOutput(backend.createStack('AutoClaimApiOutputs'), 'AutoClaimApiUrl', {
   value: fnUrl.url,
   description: 'Public HTTPS Endpoint for AutoClaim Pro Serverless API',
 });
+
+// Add to amplify_outputs.json for client-side auto-discovery
+backend.addOutput({
+  custom: {
+    AutoClaimApiUrl: fnUrl.url,
+  },
+});
+

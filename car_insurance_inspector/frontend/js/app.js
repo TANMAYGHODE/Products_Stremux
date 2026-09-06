@@ -29,7 +29,7 @@ class AutoClaimApp {
     this._initElements();
     this._initEventListeners();
     this._initApiSettings();
-    this._checkBackendHealth();
+    this._initOutputsAndHealth();
   }
 
   _initElements() {
@@ -204,6 +204,25 @@ class AutoClaimApp {
     if (btn) btn.addEventListener("click", promptSettings);
     if (aiBadge) aiBadge.addEventListener("click", promptSettings);
     if (cloudBadge) cloudBadge.addEventListener("click", promptSettings);
+  }
+
+  async _initOutputsAndHealth() {
+    if (!localStorage.getItem("AUTOCLAIM_API_URL") && !window.AUTOCLAIM_API_URL) {
+      try {
+        const res = await fetch("./amplify_outputs.json");
+        if (res.ok) {
+          const cfg = await res.json();
+          const customUrl = cfg.custom?.AutoClaimApiUrl || cfg.AutoClaimApiUrl;
+          if (customUrl) {
+            window.AUTOCLAIM_API_URL = customUrl.replace(/\/+$/, "");
+            console.log("Auto-discovered serverless API endpoint:", window.AUTOCLAIM_API_URL);
+          }
+        }
+      } catch (e) {
+        // Not present, fallback to default relative path
+      }
+    }
+    await this._checkBackendHealth();
   }
 
   async _checkBackendHealth() {

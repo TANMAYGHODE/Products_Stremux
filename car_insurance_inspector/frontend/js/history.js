@@ -46,7 +46,8 @@ class ClaimsHistoryManager {
     if (severity && severity !== "All") params.append("severity", severity);
 
     try {
-      const res = await fetch(`/api/inspections?${params.toString()}`);
+      const endpoint = window.getApiUrl ? window.getApiUrl(`/api/inspections?${params.toString()}`) : `/api/inspections?${params.toString()}`;
+      const res = await fetch(endpoint);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       this.renderHistory(data.inspections || []);
@@ -112,7 +113,8 @@ class ClaimsHistoryManager {
   async viewInspection(inspectionId, event) {
     if (event) event.stopPropagation();
     try {
-      const res = await fetch(`/api/inspections/${inspectionId}`);
+      const endpoint = window.getApiUrl ? window.getApiUrl(`/api/inspections/${inspectionId}`) : `/api/inspections/${inspectionId}`;
+      const res = await fetch(endpoint);
       if (!res.ok) throw new Error("Could not fetch survey record");
       const fullDoc = await res.json();
       
@@ -129,7 +131,8 @@ class ClaimsHistoryManager {
     if (!confirm(`Are you sure you want to delete survey record ${inspectionId} from database?`)) return;
 
     try {
-      const res = await fetch(`/api/inspections/${inspectionId}`, { method: "DELETE" });
+      const endpoint = window.getApiUrl ? window.getApiUrl(`/api/inspections/${inspectionId}`) : `/api/inspections/${inspectionId}`;
+      const res = await fetch(endpoint, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete record");
       this.loadHistory();
     } catch (err) {

@@ -30,14 +30,17 @@
       </div>
 
       <div class="header-status">
-        <div class="status-badge">
-          <span class="status-dot active"></span>
-          <span id="aiCoreStatus">AI Vision Engine: Active</span>
+        <div class="status-badge" id="aiStatusBadge" title="Click to view backend connection settings" style="cursor: pointer;">
+          <span class="status-dot warning" id="aiStatusDot"></span>
+          <span id="aiCoreStatus">AI Vision Engine: Connecting...</span>
         </div>
-        <div class="status-badge">
-          <span class="status-dot active"></span>
-          <span id="cloudVaultStatus">Secure Cloud Vault: Connected</span>
+        <div class="status-badge" id="cloudStatusBadge" title="Click to view backend connection settings" style="cursor: pointer;">
+          <span class="status-dot warning" id="cloudStatusDot"></span>
+          <span id="cloudVaultStatus">Secure Cloud Vault: Checking...</span>
         </div>
+        <button class="nav-btn" id="btnApiSettings" title="Serverless Backend Connection Settings" style="padding: 7px 10px; font-size: 11px;">
+          ⚙️ API
+        </button>
 
         <nav class="nav-tabs">
           <button class="nav-btn active" id="navInspectBtn">

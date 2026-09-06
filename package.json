@@ -1,0 +1,24 @@
+{
+  "name": "autoclaim-pro",
+  "version": "2.0.0",
+  "description": "AutoClaim Pro - Motor Insurance Survey & Loss Assessment System",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "test": "node test_backend.js"
+  },
+  "dependencies": {
+    "mongodb": "^6.12.0"
+  },
+  "devDependencies": {
+    "@aws-amplify/backend": "^1.24.0",
+    "@aws-amplify/backend-cli": "^1.4.10",
+    "@types/aws-lambda": "^8.10.147",
+    "@types/node": "^22.10.2",
+    "aws-cdk-lib": "^2.173.0",
+    "constructs": "^10.4.2",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.2"
+  }
+}

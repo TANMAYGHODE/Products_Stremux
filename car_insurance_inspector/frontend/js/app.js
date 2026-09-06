@@ -3,6 +3,12 @@
  * Multi-Stage Workflow: 1. Photos & OCR -> 2. Claim Intake -> 3. Loss Sheet & Price Editor (₹) -> 4. Certified Survey Report
  */
 
+window.getApiUrl = function(path) {
+  const base = localStorage.getItem("AUTOCLAIM_API_URL") || window.AUTOCLAIM_API_URL || "";
+  if (!base) return path;
+  return `${base.replace(/\/+$/, "")}${path}`;
+};
+
 class AutoClaimApp {
   constructor() {
     this.sides = ["front", "rear", "left", "right"];
@@ -22,6 +28,7 @@ class AutoClaimApp {
 
     this._initElements();
     this._initEventListeners();
+    this._initApiSettings();
     this._checkBackendHealth();
   }
 
@@ -170,24 +177,74 @@ class AutoClaimApp {
     return "₹ " + num.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
+  _initApiSettings() {
+    const btn = document.getElementById("btnApiSettings");
+    const aiBadge = document.getElementById("aiStatusBadge");
+    const cloudBadge = document.getElementById("cloudStatusBadge");
+
+    const promptSettings = () => {
+      const current = localStorage.getItem("AUTOCLAIM_API_URL") || "";
+      const input = prompt(
+        "AutoClaim Pro Serverless API Settings:\n\n" +
+        "• Leave blank to use default Amplify /api proxy path.\n" +
+        "• Or enter a custom Lambda Function URL (e.g. https://xxx.lambda-url.us-east-1.on.aws) or cloud backend URL:",
+        current
+      );
+      if (input !== null) {
+        const trimmed = input.trim();
+        if (trimmed) {
+          localStorage.setItem("AUTOCLAIM_API_URL", trimmed);
+        } else {
+          localStorage.removeItem("AUTOCLAIM_API_URL");
+        }
+        this._checkBackendHealth();
+      }
+    };
+
+    if (btn) btn.addEventListener("click", promptSettings);
+    if (aiBadge) aiBadge.addEventListener("click", promptSettings);
+    if (cloudBadge) cloudBadge.addEventListener("click", promptSettings);
+  }
+
   async _checkBackendHealth() {
+    const aiEl = document.getElementById("aiCoreStatus");
+    const aiDot = document.getElementById("aiStatusDot");
+    const cloudEl = document.getElementById("cloudVaultStatus");
+    const cloudDot = document.getElementById("cloudStatusDot");
+
     try {
-      const res = await fetch("/api/health");
+      const res = await fetch(window.getApiUrl("/api/health"));
       if (res.ok) {
         const data = await res.json();
-        const aiEl = document.getElementById("aiCoreStatus");
-        const cloudEl = document.getElementById("cloudVaultStatus");
-        if (aiEl && data.ai_engine === "online") {
-          aiEl.textContent = "AI Vision Engine: Active";
-          aiEl.style.color = "var(--accent-cyan)";
+        if (aiEl) {
+          aiEl.textContent = data.ai_engine === "online" ? "AI Vision Engine: Active" : "AI Vision: Key Needed";
+          aiEl.style.color = data.ai_engine === "online" ? "var(--accent-cyan)" : "var(--accent-amber)";
         }
-        if (cloudEl && data.database === "connected") {
-          cloudEl.textContent = "Secure Cloud Sync: Connected";
-          cloudEl.style.color = "var(--accent-green)";
+        if (aiDot) {
+          aiDot.className = data.ai_engine === "online" ? "status-dot active" : "status-dot warning";
         }
+        if (cloudEl) {
+          cloudEl.textContent = data.database === "connected" ? "Secure Cloud Vault: Connected" : "Cloud Vault: Disconnected";
+          cloudEl.style.color = data.database === "connected" ? "var(--accent-green)" : "var(--accent-amber)";
+        }
+        if (cloudDot) {
+          cloudDot.className = data.database === "connected" ? "status-dot active" : "status-dot warning";
+        }
+      } else {
+        throw new Error(`HTTP ${res.status}`);
       }
     } catch (err) {
-      console.warn("Health check error:", err);
+      console.warn("Health check warning:", err.message);
+      if (aiEl) {
+        aiEl.textContent = "AI Engine: Offline (Configure API)";
+        aiEl.style.color = "var(--accent-red)";
+      }
+      if (aiDot) aiDot.className = "status-dot error";
+      if (cloudEl) {
+        cloudEl.textContent = "Cloud Vault: Offline";
+        cloudEl.style.color = "var(--accent-red)";
+      }
+      if (cloudDot) cloudDot.className = "status-dot error";
     }
   }
 
@@ -316,7 +373,7 @@ class AutoClaimApp {
     });
 
     try {
-      const resp = await fetch("/api/auto-detect-vehicle", {
+      const resp = await fetch(window.getApiUrl("/api/auto-detect-vehicle"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ photos: photosPayload })
@@ -384,7 +441,13 @@ class AutoClaimApp {
       console.warn("AI Auto-detection error:", err);
       if (this.btnAutoDetectVehicle) this.btnAutoDetectVehicle.classList.remove("loading");
       if (this.btnAutoDetectText) this.btnAutoDetectText.textContent = "Retry Auto-Fill";
-      if (!isSilent) alert("Vehicle auto-detection could not extract info: " + err.message);
+      if (!isSilent) {
+        if (err.message && err.message.includes("404")) {
+          alert("Backend API not reachable (HTTP 404).\n\nPlease ensure your Amplify serverless backend is deployed with BEDROCK_API_KEY and MONGODB_URI environment variables, or click '⚙️ API' in the header to set your API endpoint.");
+        } else {
+          alert("Vehicle auto-detection could not extract info: " + err.message);
+        }
+      }
     }
   }
 
@@ -475,7 +538,7 @@ class AutoClaimApp {
     this._animateLoadingSteps();
 
     try {
-      const resp = await fetch("/api/preliminary-assessment", {
+      const resp = await fetch(window.getApiUrl("/api/preliminary-assessment"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -656,7 +719,7 @@ class AutoClaimApp {
     this.btnAutoEstimateText.textContent = "Estimating ₹ Cost...";
 
     try {
-      const resp = await fetch("/api/estimate-custom-flaw", {
+      const resp = await fetch(window.getApiUrl("/api/estimate-custom-flaw"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -775,7 +838,7 @@ class AutoClaimApp {
     document.getElementById("loadingSubtitle").textContent = "Finalizing line items, financial recapitulation, and syncing with cloud database...";
 
     try {
-      const resp = await fetch("/api/finalize-report", {
+      const resp = await fetch(window.getApiUrl("/api/finalize-report"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

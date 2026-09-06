@@ -39,7 +39,10 @@ docker run -p 8000:8000 --env-file .env autoclaim-pro
 
 ---
 
-## ☁️ Cloud Deployment
+## ☁️ Cloud Deployment (Single-Stack via AWS Amplify)
 
-- **Recommended AWS Hosting (AWS App Runner)**: Full-stack Python + Frontend deployment in 1 click directly from GitHub with automatic public HTTPS URL and zero server maintenance.
-- **AWS Amplify**: Host the frontend with static distribution and proxy `/api/*` requests to your cloud backend.
+AutoClaim Pro is configured for **zero-server, single-stack deployment on AWS Amplify (Gen 2)**:
+- **100% Serverless & Integrated**: Frontend static distribution + AWS Lambda serverless function API deployed automatically from GitHub in a single step.
+- **No separate servers**: No EC2 instances, containers, or standalone services to manage.
+- **Environment Variables in Amplify Console**:
+  Set `BEDROCK_API_KEY`, `MONGODB_URI`, and `AWS_REGION` under **App settings &rarr; Environment variables**.
